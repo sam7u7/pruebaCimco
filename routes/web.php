@@ -25,3 +25,5 @@ Route::post('/productos', [productoController::class, 'store'])->name('productos
 Route::get('/productos/{id}/edit', [ProductoController::class, 'edit'])->name('productos.edit');
 Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update');
 Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+Route::get('/productos/filter', [ProductoController::class, 'filter'])->name('productos.filter');
+Route::get('/productos/export', [ProductoController::class, 'exportCSV'])->name('productos.export');

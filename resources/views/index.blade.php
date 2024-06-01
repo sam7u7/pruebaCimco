@@ -12,7 +12,8 @@
 <div class="container mt-5">
     <h1>Productos</h1>
     <button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal">Agregar Producto</button>
-
+    <input type="text" id="filter-name" class="form-control mt-3" placeholder="Filtrar por nombre" style="width: 300px;">
+    <button class="btn btn-success float-right" onclick="window.location='{{ route('productos.export') }}'">Exportar a CSV</button>
     <!-- Tabla de Productos -->
     <table class="table mt-4">
         <thead>
@@ -128,6 +129,7 @@ $(document).ready(function() {
     var editUrl = @json(route('productos.edit', ':id'));
     var updateUrl = @json(route('productos.update', ':id'));
     var deleteUrl = @json(route('productos.destroy', ':id'));
+    var filterUrl = @json(route('productos.filter'));
 
     $('#createProductForm').on('submit', function(e) {
         e.preventDefault();
@@ -141,7 +143,11 @@ $(document).ready(function() {
                 $('#createProductModal').modal('hide');
                 $('#createProductForm')[0].reset();
                 var producto = response.producto;
-                $('#productTableBody').append('<tr id="producto-' + producto.id + '"><td>' + producto.id + '</td><td>' + producto.nombre + '</td><td>' + producto.marca + '</td><td><button class="btn btn-warning btn-sm edit-button" data-id="' + producto.id + '" data-toggle="modal" data-target="#editProductModal">Editar</button> <button class="btn btn-danger btn-sm delete-button" data-id="' + producto.id + '" data-toggle="modal" data-target="#deleteProductModal">Eliminar</button></td></tr>');
+                $('#productTableBody').append('<tr id="producto-' + producto.id + '"><td>' + producto.id
+                 + '</td><td>' + producto.nombre + '</td><td>' + producto.marca + 
+                 '</td><td><button class="btn btn-warning btn-sm edit-button" data-id="' + producto.id +
+                  '" data-toggle="modal" data-target="#editProductModal">Editar</button> <button class="btn btn-danger btn-sm delete-button" data-id="'
+                  + producto.id + '" data-toggle="modal" data-target="#deleteProductModal">Eliminar</button></td></tr>');
             },
             error: function(response) {
                 console.log(response);
@@ -208,6 +214,28 @@ $(document).ready(function() {
             error: function(response) {
                 console.log(response);
                 alert('Error al eliminar el producto');
+            }
+        });
+    });
+    $('#filter-name').on('keyup', function() {
+        var nombre = $(this).val();
+        $.ajax({
+            type: 'GET',
+            url: filterUrl,
+            data: { nombre: nombre },
+            success: function(productos) {
+                $('#productTableBody').empty();
+                productos.forEach(function(producto) {
+                    $('#productTableBody').append('<tr id="producto-' + producto.id + '"><td>' + producto.id + 
+                    '</td><td>' + producto.nombre + '</td><td>' + producto.marca 
+                    + '</td><td><button class="btn btn-warning btn-sm edit-button" data-id="' + producto.id + 
+                    '" data-toggle="modal" data-target="#editProductModal">Editar</button> <button class="btn btn-danger btn-sm delete-button" data-id="' + producto.id + 
+                    '" data-toggle="modal" data-target="#deleteProductModal">Eliminar</button></td></tr>');
+                });
+            },
+            error: function(response) {
+                console.log(response);
+                alert('Error al filtrar los productos');
             }
         });
     });
